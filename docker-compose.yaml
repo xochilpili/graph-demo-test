@@ -1,0 +1,11 @@
+version: '3.6'
+
+services:
+  mongo:
+    image: mongo:4.4.16
+    container_name: test_mongo
+    volumes:
+      # Data files - safe to delete
+      - ./deploy/mongo-volume:/data/db
+    ports:
+      - 27017:27017

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graph-demo-service
+  labels:
+    k8s-app: graph-demo-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: graph-demo-service
+  template:
+    metadata:
+      labels:
+        k8s-app: graph-demo-service
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: graph-demo-service
+          image: registry.paranoids.us/graph-demo-service:main
+          imagePullPolicy: Always
+          env:
+            - name: HOST
+              value: 0.0.0.0
+            - name: PORT
+              value: '4000'
+            - name: MONGO_URI
+              value: 'mongodb://mongo.databases.svc.cluster.local/blog_test?replicaSet=rs0'
+          ports:
+            - containerPort: 4000
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graph-demo-service
+  labels:
+    k8s-app: graph-demo-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 4000
+  selector:
+    k8s-app: graph-demo-service
