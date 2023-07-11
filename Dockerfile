@@ -2,6 +2,8 @@ FROM node:18-alpine as build
 WORKDIR /app
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
+COPY .eslintrc.json /app/.eslintrc.json
+COPY .eslintignore /app/.eslintignore
 RUN npm ci
 COPY src /app/src
 COPY tsconfig.json /app/tsconfig.json
